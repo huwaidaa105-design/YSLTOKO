@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Umi Shop - YSL Original</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f9; }
+
+/* HEADER */
+.header { background: #2563eb; padding: 15px; display: flex; align-items: center; justify-content: space-between; color: white; position: sticky; top: 0; z-index: 100; }
+.logo { font-weight: bold; font-size: 20px; }
+.search-box { flex: 1; margin: 0 10px; }
+.search-box input { width: 100%; padding: 10px; border-radius: 8px; border: none; }
+.cart-icon { position: relative; cursor: pointer; font-size: 22px; }
+.cart-count { position: absolute; top: -5px; right: -8px; background: red; color: white; font-size: 12px; padding: 3px 6px; border-radius: 50%; }
+
+/* NAV TAB */
+.nav-tabs { display: flex; background: #0D0D0D; position: sticky; top: 64px; z-index: 99; }
+.nav-tab { flex: 1; padding: 12px; text-align: center; color: white; cursor: pointer; font-size: 14px; border-bottom: 3px solid transparent; }
+.nav-tab.active { border-bottom: 3px solid #F5F5F5; background: #0239b1; }
+
+/* MARQUEE */
+.marquee { background: #a0c7f4; color: white; padding: 8px; white-space: nowrap; overflow: hidden; }
+.marquee span { display: inline-block; padding-left: 100%; animation: marq 18s linear infinite; }
+@keyframes marq { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+/* PAGE */
+.page { display: none; }
+.page.active { display: block; }
+
+/* SLIDER HOMEPAGE */
+.slider { position: relative; margin: 15px; border-radius: 15px; overflow: hidden; height: 220px; box-shadow: 0 6px 18px rgba(0,0,0,0.15); }
+.slide { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+.slide.active { display: block; animation: fadeIn 1s; }
+.slide img { width: 100%; height: 100%; object-fit: cover; }
+.slide-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: white; padding: 20px; }
+.slide-caption h3 { margin: 0 0 5px 0; }
+.slider-dots { position: absolute; bottom: 8px; right: 15px; z-index: 5; }
+.dot { display: inline-block; width: 10px; height: 10px; background: rgba(255,255,255,0.5); border-radius: 50%; margin: 0 3px; cursor: pointer; }
+.dot.active { background: white; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* HERO */
+.banner { margin: 15px; background: linear-gradient(135deg, #1e40af, #2563eb); color: white; padding: 25px; border-radius: 15px; text-align: center; }
+
+/* PROMO CARDS */
+.promo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+.promo-card { border-radius: 12px; overflow: hidden; position: relative; height: 120px; cursor: pointer; }
+.promo-card img { width: 100%; height: 100%; object-fit: cover; }
+.promo-card .promo-text { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(37,99,235,0.85); color: white; padding: 8px; font-size: 13px; font-weight: bold; }
+
+/* SECTION */
+.section { padding: 20px 15px; }
+.section h2 { color: #1e40af; border-left: 5px solid #2563eb; padding-left: 10px; }
+
+/* FOUNDER */
+.founder-card { background: white; border-radius: 15px; padding: 20px; margin: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+.founder-card img { width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #2563eb; }
+.founder-card h3 { margin: 10px 0 5px 0; color: #1e40af; }
+.founder-card p { color: #666; font-size: 14px; line-height: 1.6; }
+
+/* PRODUCT INFO */
+.info-card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+.info-card h3 { color: #2563eb; margin-top: 0; }
+.info-card p { color: #444; line-height: 1.7; font-size: 14px; }
+
+/* CATEGORIES */
+.cat-wrapper { padding: 0 15px 10px 15px; overflow-x: auto; white-space: nowrap; }
+.cat-btn { padding: 8px 14px; border: none; border-radius: 20px; background: #e5e7eb; cursor: pointer; font-size: 13px; margin: 4px; }
+.cat-btn.active, .cat-btn:hover { background: #2563eb; color: white; }
+.subcat-wrapper { padding: 0 15px 10px 15px; overflow-x: auto; white-space: nowrap; display: none; }
+.subcat-wrapper.show { display: block; }
+.subcat-btn { padding: 6px 12px; border: 1px solid #2563eb; border-radius: 15px; background: white; color: #2563eb; cursor: pointer; font-size: 12px; margin: 3px; }
+.subcat-btn.active { background: #2563eb; color: white; }
+
+/* PRODUCTS */
+.container { padding: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+.card { background: #fff; border-radius: 18px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); overflow: hidden; transition: 0.3s; cursor: pointer; position: relative; }
+.card:hover { transform: translateY(-5px); }
+.card img { width: 100%; height: 160px; object-fit: cover; }
+.badge { position: absolute; top: 10px; left: 10px; background: #ef4444; color: white; padding: 5px 10px; font-size: 11px; border-radius: 8px; font-weight: bold; }
+.card-body { padding: 12px; }
+.rating { font-size: 13px; color: #f59e0b; }
+.old-price { text-decoration: line-through; color: #999; font-size: 13px; }
+.price { color: #2563eb; font-weight: bold; font-size: 18px; }
+.desc { font-size: 12px; color: #666; margin-top: 4px; }
+.card-buttons { display: flex; gap: 5px; margin-top: 8px; }
+.cart-btn { flex: 1; background: #eef2ff; padding: 8px; text-align: center; border-radius: 10px; cursor: pointer; font-size: 12px; color: #2563eb; font-weight: bold; }
+.cart-btn:hover { background: #2563eb; color: white; }
+.buy-btn { flex: 1; background: #25D366; padding: 8px; text-align: center; border-radius: 10px; cursor: pointer; font-size: 12px; color: white; font-weight: bold; }
+.buy-btn:hover { background: #128C7E; }
+
+/* MISC */
+.toast { position: fixed; bottom: 20px; right: 20px; background: #2563eb; color: white; padding: 10px 15px; border-radius: 8px; display: none; z-index: 200; }
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 150; }
+.modal-content { background: white; width: 90%; max-width: 450px; padding: 20px; border-radius: 12px; max-height: 85%; overflow: auto; }
+.footer { background: #1e40af; color: white; text-align: center; padding: 20px; margin-top: 30px; font-size: 14px; }
+input, select, textarea { width: 100%; padding: 8px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; font-family: Arial; }
+
+/* CART ITEM */
+.cart-item { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.cart-item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+.cart-item-info { flex: 1; font-size: 13px; }
+.cart-item-info b { display: block; margin-bottom: 3px; }
+.btn-remove { background: red; color: white; border: none; border-radius: 5px; padding: 4px 8px; cursor: pointer; font-size: 11px; }
+
+/* QUICK BUY MODAL */
+.qb-product { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; padding: 10px; background: #f9fafb; border-radius: 10px; }
+.qb-product img { width: 70px; height: 70px; border-radius: 8px; object-fit: cover; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">US</div>
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Cari produk YSL...">
+  </div>
+  <div class="cart-icon" onclick="openCart()">
+    🛒 <span class="cart-count" id="cartCount">0</span>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showPage('home', this)">🏠 Home</div>
+  <div class="nav-tab" onclick="showPage('shop', this)">🛍️ Shop</div>
+  <div class="nav-tab" onclick="showPage('about', this)">👑 Tentang</div>
+</div>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <span>🔥 PROMO YSL TRENDING! Diskon hingga 30% + Gratis Gift Eksklusif - Order Sekarang via WhatsApp! 🔥</span>
+</div>
+
+<!-- ============ HOMEPAGE ============ -->
+<div id="page-home" class="page active">
+
+  <!-- SLIDER IKLAN (gambar bisa diganti dengan mengubah URL di array slides) -->
+  <div class="slider" id="slider"></div>
+
+  <div class="banner">
+    <h2>✨ YSL Trending Collection 2026 ✨</h2>
+    <p>Dapatkan produk YSL original dengan harga terbaik minggu ini</p>
+  </div>
+
+  <!-- PROMO GRID -->
+  <div class="section">
+    <h2>🎁 Promo Spesial</h2>
+  </div>
+  <div class="promo-grid">
+    <div class="promo-card" onclick="showPage('shop', document.querySelectorAll('.nav-tab')[1])">
+      <img src="cushion.jpeg" alt="Promo Parfum">
+      <div class="promo-text">Parfum Diskon 30%</div>
+    </div>
+    <div class="promo-card" onclick="showPage('shop', document.querySelectorAll('.nav-tab')[1])">
+      <img src="serum.jpeg" alt="">
+      <div class="promo-text">Makeup Bundling</div>
+    </div>
+    <div class="promo-card" onclick="showPage('shop', document.querySelectorAll('.nav-tab')[1])">
+      <img src="envelope.jpeg" alt="Promo Skincare">
+      <div class="promo-text">Skincare Premium</div>
+    </div>
+    <div class="promo-card" onclick="showPage('shop', document.querySelectorAll('.nav-tab')[1])">
+      <img src="gloss.jpeg" alt="Promo Tas">
+      <div class="promo-text">Tas YSL Original</div>
+    </div>
+  </div>
+
+  <!-- TENTANG YSL -->
+  <div class="section">
+    <h2>📖 Tentang YSL</h2>
+  </div>
+  <div class="info-card">
+    <h3>Yves Saint Laurent (YSL)</h3>
+    <p>Yves Saint Laurent adalah rumah mode mewah asal Prancis yang didirikan pada tahun 1961. Dikenal dengan estetika yang berani, elegan, dan penuh karakter, YSL telah menjadi ikon dunia fashion, kecantikan, dan parfum. Produk YSL terkenal akan kualitas premiumnya, mulai dari parfum yang memikat, makeup berkualitas tinggi, hingga koleksi tas dan aksesoris yang menjadi simbol status.</p>
+  </div>
+
+  <!-- CTA Lihat Produk -->
+  <div class="section" style="text-align:center;">
+    <button onclick="showPage('shop', document.querySelectorAll('.nav-tab')[1])" style="background:#2563eb;color:white;border:none;padding:14px 40px;border-radius:30px;font-size:16px;cursor:pointer;font-weight:bold;">
+      🛍️ Lihat Semua Produk
+    </button>
+  </div>
+</div>
+
+<!-- ============ SHOP PAGE ============ -->
+<div id="page-shop" class="page">
+  <div class="cat-wrapper" id="catWrapper"></div>
+  <div class="subcat-wrapper" id="subcatWrapper"></div>
+  <div class="container" id="productList"></div>
+</div>
+
+<!-- ============ ABOUT / FOUNDERS PAGE ============ -->
+<div id="page-about" class="page">
+  <div class="banner">
+    <h2>👑 Sejarah & Pendiri YSL</h2>
+    <p>Mengenal lebih dekat brand legendaris dari Prancis</p>
+  </div>
+
+  <div class="founder-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Yves_Saint_Laurent_1958_2.jpg/440px-Yves_Saint_Laurent_1958_2.jpg" alt="Yves Saint Laurent" onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400'">
+    <h3>Yves Saint Laurent</h3>
+    <p><b>Pendiri & Desainer (1936 - 2008)</b></p>
+    <p>Desainer legendaris asal Aljazair-Prancis yang merevolusi dunia fashion wanita. Beliau memperkenalkan tuksedo wanita "Le Smoking" dan menjadi salah satu desainer paling berpengaruh abad ke-20.</p>
+  </div>
+
+  <div class="founder-card">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Pierre_Berg%C3%A9_2010.jpg/440px-Pierre_Berg%C3%A9_2010.jpg" alt="Pierre Berge" onerror="this.src='https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400'">
+    <h3>Pierre Bergé</h3>
+    <p><b>Co-Founder & Pengusaha (1930 - 2017)</b></p>
+    <p>Partner bisnis sekaligus partner hidup Yves Saint Laurent. Beliau adalah otak di balik kesuksesan bisnis YSL yang membawa brand ini menjadi raksasa fashion dunia.</p>
+  </div>
+
+  <div class="info-card">
+    <h3>💎 Penjelasan Produk YSL</h3>
+    <p><b>🌸 Parfum YSL</b> — Aroma mewah yang tahan lama, ikonik seperti Black Opium, Mon Paris, dan Libre. Dibuat dengan komposisi parfum premium kelas dunia.</p>
+    <p><b>💄 Makeup YSL</b> — Lipstik, foundation, mascara, dan eyeshadow dengan formula berkualitas tinggi yang memberikan tampilan flawless dan tahan lama.</p>
+    <p><b>👜 Tas YSL</b> — Koleksi tas kulit asli dengan desain timeless seperti Niki Bag, Loulou, dan Envelope Bag. Simbol kemewahan yang abadi.</p>
+    <p><b>✨ Skincare YSL</b> — Rangkaian perawatan kulit premium seperti Or Rouge yang anti-aging, mengangkat keremajaan kulit dengan teknologi terkini.</p>
+  </div>
+
+  <div class="info-card">
+    <h3>🏪 Tentang Umi Shop</h3>
+    <p>Umi Shop adalah toko terpercaya yang menyediakan produk YSL <b>100% original</b> dengan harga terbaik. Kami melayani pengiriman ke seluruh Indonesia dan menjamin keaslian setiap produk yang kami jual.</p>
+    <p>📱 Hubungi kami via WhatsApp: <b>0895-1800-1628</b></p>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">Ditambahkan ke keranjang ✓</div>
+
+<!-- MODAL DETAIL -->
+<div class="modal" id="detailModal">
+  <div class="modal-content" id="detailContent"></div>
+</div>
+
+<!-- MODAL QUICK BUY (langsung beli tanpa keranjang) -->
+<div class="modal" id="quickBuyModal">
+  <div class="modal-content">
+    <h3>⚡ Beli Sekarang</h3>
+    <div id="qbProductInfo"></div>
+    <hr>
+    <label>Jumlah:</label>
+    <input type="number" id="qbQty" value="1" min="1">
+
+    <label>Metode Pembayaran:</label>
+    <select id="qbPayment">
+      <option>Transfer Bank</option>
+      <option>COD</option>
+      <option>E-Wallet</option>
+    </select>
+
+    <label>Pilih Ekspedisi:</label>
+    <select id="qbShipping">
+      <option value="JNE">JNE (Rp 20.000)</option>
+      <option value="J&T">J&T (Rp 18.000)</option>
+      <option value="SiCepat">SiCepat (Rp 15.000)</option>
+    </select>
+
+    <label>Nama Pembeli:</label>
+    <input type="text" id="qbName">
+
+    <label>No HP:</label>
+    <input type="text" id="qbPhone">
+
+    <label>Alamat Lengkap:</label>
+    <textarea id="qbAddress"></textarea>
+
+    <button onclick="quickBuyWA()" style="background:#25D366;color:white;padding:12px;border:none;border-radius:8px;width:100%;font-weight:bold;margin-top:10px;">
+      💬 Pesan Langsung via WhatsApp
+    </button>
+    <button onclick="closeQuickBuy()" style="margin-top:8px;width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;background:white;cursor:pointer;">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL KERANJANG -->
+<div class="modal" id="cartModal">
+  <div class="modal-content">
+    <h3>🛒 Keranjang Belanja</h3>
+    <div id="cartItems"></div>
+    <hr>
+    <label>Metode Pembayaran:</label>
+    <select id="paymentMethod">
+      <option>Transfer Bank</option>
+      <option>COD</option>
+      <option>E-Wallet</option>
+    </select>
+
+    <label>Pilih Ekspedisi:</label>
+    <select id="shippingMethod" onchange="updateOngkir()">
+      <option value="JNE">JNE (Rp 20.000)</option>
+      <option value="J&T">J&T (Rp 18.000)</option>
+      <option value="SiCepat">SiCepat (Rp 15.000)</option>
+    </select>
+    <p id="ongkirText">Ongkir: Rp 20.000</p>
+
+    <label>Nama Pembeli:</label>
+    <input type="text" id="buyerName">
+
+    <label>No HP:</label>
+    <input type="text" id="buyerPhone">
+
+    <label>Alamat Lengkap:</label>
+    <textarea id="buyerAddress"></textarea>
+
+    <button onclick="checkoutWA()" style="background:#25D366;color:white;padding:12px;border:none;border-radius:8px;width:100%;font-weight:bold;margin-top:10px;">
+      💬 Pesan via WhatsApp
+    </button>
+    <button onclick="closeCart()" style="margin-top:8px;width:100%;padding:10px;border-radius:8px;border:1px solid #ddd;background:white;cursor:pointer;">Tutup</button>
+  </div>
+</div>
+
+<div class="footer">
+  <p><b>Umi Shop</b> menyediakan produk YSL original kualitas premium.</p>
+  <p>Hubungi kami via WhatsApp untuk pemesanan dan informasi lebih lanjut.</p>
+  <p>© 2026 Umi Shop. All Rights Reserved.</p>
+</div>
+
+<script>
+// ============= SLIDER (GAMBAR BISA DIGANTI DI SINI) =============
+const slides = [
+  { img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800", title: "YSL Black Opium", text: "Aroma misterius yang memikat" },
+  { img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800", title: "Diskon 30% Makeup", text: "Promo terbatas minggu ini" },
+  { img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800", title: "Tas YSL Original", text: "Koleksi terbaru telah hadir" },
+  { img: "https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=800", title: "Skincare Premium", text: "Rahasia kulit awet muda" }
+];
+
+function buildSlider() {
+  const s = document.getElementById("slider");
+  let html = "";
+  slides.forEach((sl, i) => {
+    html += `<div class="slide ${i===0?'active':''}">
+      <img src="${sl.img}" alt="${sl.title}">
+      <div class="slide-caption"><h3>${sl.title}</h3><p>${sl.text}</p></div>
+    </div>`;
+  });
+  html += `<div class="slider-dots">`;
+  slides.forEach((_, i) => html += `<span class="dot ${i===0?'active':''}" onclick="goToSlide(${i})"></span>`);
+  html += `</div>`;
+  s.innerHTML = html;
+}
+let currentSlide = 0;
+function goToSlide(i) {
+  document.querySelectorAll(".slide").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".dot").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".slide")[i].classList.add("active");
+  document.querySelectorAll(".dot")[i].classList.add("active");
+  currentSlide = i;
+}
+setInterval(() => goToSlide((currentSlide+1) % slides.length), 4000);
+
+// ============= NAVIGATION =============
+function showPage(name, el) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-"+name).classList.add("active");
+  document.querySelectorAll(".nav-tab").forEach(t => t.classList.remove("active"));
+  if (el) el.classList.add("active");
+  window.scrollTo(0,0);
+}
+
+// ============= PRODUCTS (dengan sub-kategori makeup) =============
+let products = [
+  { id:1, name:"YSL Black Opium Eau de Parfum Glitter", desc:"Parfum wanita elegan.", price:2000000, old:2840000, rating:4.9, img:"glitter.jpeg", category:"parfum", subcategory:"" },
+  { id:2, name:"YSL Touche Eclat Glow Pact Cushion", desc:"Makeup flawless.", price:7000000, old:8500000, rating:4.8, img:"pact cushion.jpeg", category:"makeup", subcategory:"foundation" },
+  { id:3, name:"YSL The Inks Vinyl Cream", desc:"Bibir terlihat indah.", price:6800000, old:8200000, rating:4.7, img:"inks viny.jpeg", category:"makeup", subcategory:"lipstik" },
+  { id:4, name:"YSL Make Me Blush Bold Blurring Blush", desc:"Seperti orang di butterfly era.", price:4500000, old:6000000, rating:4.8, img:"blurring blush.jpeg", category:"makeup", subcategory:"pipi" },
+  { id:5, name:"YSL Loveshine Candy Glaze", desc:"Terlihat menggoda.", price:4800000, old:6200000, rating:4.7, img:"love shine.jpeg", category:"makeup", subcategory:"lipstik" },
+  { id:6, name:"YSL All Hours Glow Foundation", desc:"Foundation flawless.", price:7500000, old:9000000, rating:4.9, img:"glow foundi.jpeg", category:"makeup", subcategory:"foundation" },
+  { id:7, name:"YSL The Inks Blur", desc:"Full coverage.", price:7700000, old:9200000, rating:4.8, img:"inks blur.jpeg", category:"makeup", subcategory:"lipstik" },
+  { id:8, name:"YSL Le Cushion Encre De Peau", desc:"Iconic.", price:5200000, old:6500000, rating:4.9, img:"cushion.jpeg", category:"makeup", subcategory:"foundation" },
+  { id:9, name:"YSL All Hours Hyper Blur Loose Powder", desc:"Looks match.", price:4300000, old:5500000, rating:4.6, img:"loose powder.jpeg", category:"makeup", subcategory:"foundation" },
+  { id:10, name:"YSL Babydoll Kiss & Blush Lipgloss 10ml", desc:"Kissable.", price:3900000, old:5000000, rating:4.5, img:"babydoll.jpeg", category:"makeup", subcategory:"lipstik" },
+  { id:11, name:"YSL Touche Eclat Blur Primer 30ml", desc:"Bersinar.", price:7200000, old:8800000, rating:4.9, img:"primer.jpeg", category:"makeup", subcategory:"primer" },
+  { id:12, name:"YSL MYSLF L'Absolu", desc:"Aroma kuat.", price:7500000, old:9000000, rating:4.8, img:"myslf.jpeg", category:"parfum", subcategory:"" },
+  { id:13, name:"Mon Paris Floral Perfume 1.6oz EDP", desc:"Tahan seharian.", price:5300000, old:6800000, rating:4.7, img:"spray.jpeg", category:"parfum", subcategory:"" },
+  { id:14, name:"Saint Laurent Medium Envelope Shoulder Bag - Black", desc:"Fashionable.", price:5100000, old:6500000, rating:4.7, img:"envelope.jpeg", category:"tas", subcategory:"" },
+  { id:15, name:"Mini Voltaire Bag", desc:"Fancy.", price:8900000, old:11000000, rating:4.9, img:"voltaire.jpeg", category:"tas", subcategory:"" },
+  { id:16, name:"Saint Laurent Mini Lou Quilted Leather Black", desc:"Wow amazing.", price:6000000, old:7500000, rating:4.6, img:"leather.jpeg", category:"tas", subcategory:"" },
+  { id:17, name:"YSL Top Secrets Glow Setting Spray 100ml", desc:"Makeup tahan lama.", price:5800000, old:7200000, rating:4.6, img:"setting.jpeg", category:"skincare", subcategory:"" },
+  { id:18, name:"YSL Couture Mini Clutch Eyeshadow", desc:"Mata terlihat indah.", price:5500000, old:7000000, rating:4.5, img:"eyeshadow.jpeg", category:"makeup", subcategory:"mata" },
+  { id:19, name:"YSL Mascara Volume Effet Faux Cils Waterproof", desc:"Hitam pekat.", price:3500000, old:4500000, rating:4.7, img:"maskara.jpeg", category:"makeup", subcategory:"mata" },
+  { id:20, name:"YSL Gloss Volupte #208 Fauve 6ml", desc:"Mini favorit.", price:3600000, old:4800000, rating:4.7, img:"gloss.jpeg", category:"makeup", subcategory:"lipstik" },
+  { id:21, name:"YSL Or Rouge Anti-Aging Serum 30ml", desc:"Limited edition.", price:12000000, old:15000000, rating:5.0, img:"serum.jpeg", category:"skincare", subcategory:"" },
+  { id:22, name:"YSL Or Rouge Creme Riche", desc:"Paket lengkap.", price:12500000, old:15500000, rating:5.0, img:"creme.jpeg", category:"skincare", subcategory:"" },
+  { id:23, name:"Saint Laurent Shoulder Bag - Woman", desc:"Fashionable.", price:4200000, old:5500000, rating:4.6, img:"shoulder.jpeg", category:"tas", subcategory:"" },
+  { id:24, name:"Saint Laurent SL M119 BLAZE Sunglasses", desc:"Kacamata stylish.", price:4700000, old:6000000, rating:4.8, img:"blaze.jpeg", category:"tas", subcategory:"" },
+  { id:25, name:"Saint Laurent Medium Niki Leather Bag - Brown", desc:"Special release.", price:13500000, old:17000000, rating:5.0, img:"brown.jpeg", category:"tas", subcategory:"" }
+];
+
+const categories = [
+  { id:"all", name:"Semua" },
+  { id:"parfum", name:"Parfum" },
+  { id:"makeup", name:"Makeup" },
+  { id:"tas", name:"Tas" },
+  { id:"skincare", name:"Skincare" }
+];
+const makeupSubcategories = [
+  { id:"all", name:"Semua Makeup" },
+  { id:"lipstik", name:"💋 Lipstik" },
+  { id:"foundation", name:"🧴 Foundation" },
+  { id:"mata", name:"👁️ Mata" },
+  { id:"pipi", name:"🌸 Pipi" },
+  { id:"primer", name:"✨ Primer" }
+];
+
+let activeCat = "all";
+let activeSubcat = "all";
+let cart = [];
+let ongkir = 20000;
+let quickBuyProduct = null;
+
+function renderCategories() {
+  const w = document.getElementById("catWrapper");
+  w.innerHTML = categories.map(c =>
+    `<button class="cat-btn ${c.id===activeCat?'active':''}" onclick="filterCategory('${c.id}')">${c.name}</button>`
+  ).join("");
+
+  const sw = document.getElementById("subcatWrapper");
+  if (activeCat === "makeup") {
+    sw.classList.add("show");
+    sw.innerHTML = makeupSubcategories.map(s =>
+      `<button class="subcat-btn ${s.id===activeSubcat?'active':''}" onclick="filterSubcategory('${s.id}')">${s.name}</button>`
+    ).join("");
+  } else {
+    sw.classList.remove("show");
+  }
+}
+
+function filterCategory(cat) {
+  activeCat = cat;
+  activeSubcat = "all";
+  renderCategories();
+  applyFilters();
+}
+function filterSubcategory(sub) {
+  activeSubcat = sub;
+  renderCategories();
+  applyFilters();
+}
+
+function applyFilters() {
+  let filtered = products;
+  if (activeCat !== "all") filtered = filtered.filter(p => p.category === activeCat);
+  if (activeCat === "makeup" && activeSubcat !== "all") filtered = filtered.filter(p => p.subcategory === activeSubcat);
+  const keyword = document.getElementById("search").value.toLowerCase();
+  if (keyword) filtered = filtered.filter(p => p.name.toLowerCase().includes(keyword));
+  renderProducts(filtered);
+}
+
+function renderProducts(data) {
+  const container = document.getElementById("productList");
+  if (data.length === 0) {
+    container.innerHTML = "<p style='grid-column:1/-1;text-align:center;padding:30px;color:#666;'>Produk tidak ditemukan</p>";
+    return;
+  }
+  container.innerHTML = data.map(p => `
+    <div class="card">
+      <div class="badge">-${Math.round((1 - p.price/p.old)*100)}%</div>
+      <img src="${p.img}" onclick="showDetail(${p.id})" onerror="this.src='https://via.placeholder.com/300x300/2563eb/ffffff?text=YSL'">
+      <div class="card-body" onclick="showDetail(${p.id})">
+        <div class="rating">⭐ ${p.rating}</div>
+        <h4 style="font-size:13px;margin:5px 0;">${p.name}</h4>
+        <div class="old-price">Rp ${p.old.toLocaleString()}</div>
+        <div class="price">Rp ${p.price.toLocaleString()}</div>
+        <div class="desc">${p.desc}</div>
+      </div>
+      <div style="padding:0 12px 12px 12px;">
+        <div class="card-buttons">
+          <div class="cart-btn" onclick="event.stopPropagation(); addToCart(${p.id})">+ Keranjang</div>
+          <div class="buy-btn" onclick="event.stopPropagation(); openQuickBuy(${p.id})">⚡ Beli</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+document.getElementById("search").addEventListener("input", applyFilters);
+
+// ============= DETAIL =============
+function showDetail(id) {
+  const p = products.find(x => x.id === id);
+  document.getElementById("detailContent").innerHTML = `
+    <h3>${p.name}</h3>
+    <img src="${p.img}" style="width:100%;border-radius:10px" onerror="this.src='https://via.placeholder.com/400x400/2563eb/ffffff?text=YSL'">
+    <p>${p.desc}</p>
+    <p>Rating ⭐ ${p.rating}</p>
+    <p><s style="color:#999">Rp ${p.old.toLocaleString()}</s></p>
+    <h3 style="color:#2563eb;">Rp ${p.price.toLocaleString()}</h3>
+    <button onclick="addToCart(${p.id});closeDetail()" style="background:#2563eb;color:white;padding:10px;border:none;border-radius:8px;width:100%;margin-bottom:8px;cursor:pointer;">+ Tambah ke Keranjang</button>
+    <button onclick="closeDetail();openQuickBuy(${p.id})" style="background:#25D366;color:white;padding:10px;border:none;border-radius:8px;width:100%;margin-bottom:8px;cursor:pointer;">⚡ Beli Sekarang</button>
+    <button onclick="closeDetail()" style="padding:10px;width:100%;border:1px solid #ddd;background:white;border-radius:8px;cursor:pointer;">Tutup</button>
+  `;
+  document.getElementById("detailModal").style.display = "flex";
+}
+function closeDetail() { document.getElementById("detailModal").style.display = "none"; }
+
+// ============= CART =============
+function addToCart(id) {
+  const product = products.find(p => p.id === id);
+  cart.push(product);
+  document.getElementById("cartCount").innerText = cart.length;
+  const toast = document.getElementById("toast");
+  toast.style.display = "block";
+  setTimeout(() => toast.style.display = "none", 1500);
+}
+
+function openCart() { renderCart(); document.getElementById("cartModal").style.display = "flex"; }
+function closeCart() { document.getElementById("cartModal").style.display = "none"; }
+
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  if (cart.length === 0) { container.innerHTML = "<p>Keranjang kosong</p>"; return; }
+  container.innerHTML = cart.map((item, index) => `
+    <div class="cart-item">
+      <input type="checkbox" id="item${index}" checked>
+      <img src="${item.img}" onerror="this.src='https://via.placeholder.com/60x60/2563eb/ffffff?text=YSL'">
+      <div class="cart-item-info">
+        <b>${item.name}</b>
+        <span style="color:#2563eb;font-weight:bold;">Rp ${item.price.toLocaleString()}</span>
+      </div>
+      <button class="btn-remove" onclick="removeItem(${index})">Hapus</button>
+    </div>
+  `).join("");
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  document.getElementById("cartCount").innerText = cart.length;
+  renderCart();
+}
+
+function updateOngkir() {
+  const e = document.getElementById("shippingMethod").value;
+  ongkir = e === "JNE" ? 20000 : e === "J&T" ? 18000 : 15000;
+  document.getElementById("ongkirText").innerText = "Ongkir: Rp " + ongkir.toLocaleString();
+}
+
+function checkoutWA() {
+  const now = new Date();
+  const tanggal = now.toLocaleDateString("id-ID");
+  const jam = now.toLocaleTimeString("id-ID");
+  const kode = "US" + now.getTime().toString().slice(-6);
+  const payment = document.getElementById("paymentMethod").value;
+  const shipping = document.getElementById("shippingMethod").value;
+  const nama = document.getElementById("buyerName").value;
+  const hp = document.getElementById("buyerPhone").value;
+  const alamat = document.getElementById("buyerAddress").value;
+
+  if (!nama || !hp || !alamat) { alert("Lengkapi data pembeli dulu!"); return; }
+
+  let message = `Halo Umi Shop,%0A`;
+  message += `Kode Pesanan: ${kode}%0ATanggal: ${tanggal}%0AJam: ${jam}%0A%0A`;
+  message += `Nama: ${nama}%0AHP: ${hp}%0AAlamat: ${alamat}%0A%0A`;
+
+  let totalHarga = 0, totalBarang = 0;
+  cart.forEach((p, i) => {
+    const c = document.getElementById("item" + i);
+    if (c && c.checked) {
+      message += `- ${p.name}%0A  Rp ${p.price.toLocaleString()}%0A`;
+      totalHarga += p.price;
+      totalBarang++;
+    }
+  });
+  if (totalBarang === 0) { alert("Pilih produk dulu!"); return; }
+  const grand = totalHarga + ongkir;
+  message += `%0AJumlah Barang: ${totalBarang}%0ASubtotal: Rp ${totalHarga.toLocaleString()}%0A`;
+  message += `Ongkir (${shipping}): Rp ${ongkir.toLocaleString()}%0AMetode Bayar: ${payment}%0A`;
+  message += `TOTAL BAYAR: Rp ${grand.toLocaleString()}`;
+
+  // OTOMATIS BUKA WHATSAPP
+  window.open("https://wa.me/6289518001628?text=" + message, "_blank");
+  cart = [];
+  document.getElementById("cartCount").innerText = 0;
+  closeCart();
+}
+
+// ============= QUICK BUY (LANGSUNG BELI TANPA KERANJANG) =============
+function openQuickBuy(id) {
+  quickBuyProduct = products.find(p => p.id === id);
+  document.getElementById("qbProductInfo").innerHTML = `
+    <div class="qb-product">
+      <img src="${quickBuyProduct.img}" onerror="this.src='https://via.placeholder.com/70x70/2563eb/ffffff?text=YSL'">
+      <div>
+        <b>${quickBuyProduct.name}</b><br>
+        <span style="color:#2563eb;font-weight:bold;">Rp ${quickBuyProduct.price.toLocaleString()}</span>
+      </div>
+    </div>
+  `;
+  document.getElementById("quickBuyModal").style.display = "flex";
+}
+function closeQuickBuy() { document.getElementById("quickBuyModal").style.display = "none"; }
+
+function quickBuyWA() {
+  const qty = parseInt(document.getElementById("qbQty").value) || 1;
+  const payment = document.getElementById("qbPayment").value;
+  const shipping = document.getElementById("qbShipping").value;
+  const nama = document.getElementById("qbName").value;
+  const hp = document.getElementById("qbPhone").value;
+  const alamat = document.getElementById("qbAddress").value;
+
+  if (!nama || !hp || !alamat) { alert("Lengkapi data pembeli dulu!"); return; }
+
+  const ongkirQB = shipping === "JNE" ? 20000 : shipping === "J&T" ? 18000 : 15000;
+  const subtotal = quickBuyProduct.price * qty;
+  const grand = subtotal + ongkirQB;
+  const now = new Date();
+  const kode = "US" + now.getTime().toString().slice(-6);
+
+  let msg = `Halo Umi Shop, saya mau langsung beli:%0A%0A`;
+  msg += `Kode Pesanan: ${kode}%0A`;
+  msg += `Tanggal: ${now.toLocaleDateString("id-ID")} ${now.toLocaleTimeString("id-ID")}%0A%0A`;
+  msg += `Nama: ${nama}%0AHP: ${hp}%0AAlamat: ${alamat}%0A%0A`;
+  msg += `📦 Produk: ${quickBuyProduct.name}%0A`;
+  msg += `Jumlah: ${qty} pcs%0A`;
+  msg += `Harga: Rp ${quickBuyProduct.price.toLocaleString()}%0A`;
+  msg += `Subtotal: Rp ${subtotal.toLocaleString()}%0A`;
+  msg += `Ongkir (${shipping}): Rp ${ongkirQB.toLocaleString()}%0A`;
+  msg += `Metode Bayar: ${payment}%0A`;
+  msg += `TOTAL BAYAR: Rp ${grand.toLocaleString()}`;
+
+  // OTOMATIS BUKA WHATSAPP
+  window.open("https://wa.me/6289518001628?text=" + msg, "_blank");
+  closeQuickBuy();
+}
+
+// ============= INIT =============
+buildSlider();
+renderCategories();
+renderProducts(products);
+</script>
+</body>
+</html>
